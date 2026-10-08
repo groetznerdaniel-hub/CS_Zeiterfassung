@@ -1,0 +1,20 @@
+Arbeitszeiterfassung - Installation
+
+1. Alle Dateien dieses Ordners auf einen Webspace mit HTTPS hochladen
+   (z. B. Netlify Drop, GitHub Pages, Cloudflare Pages oder dem eigenen Webserver).
+   Wichtig: Die Seite muss ueber https:// erreichbar sein. Ein Doppelklick auf
+   index.html reicht zum Ausprobieren, aber nicht zum Installieren.
+2. Die Adresse auf dem Geraet oeffnen und installieren:
+   - Android (Chrome): Menue (drei Punkte) -> "App installieren" bzw. "Zum Startbildschirm".
+   - iPhone/iPad (Safari): Teilen-Symbol -> "Zum Home-Bildschirm".
+   - Windows (Edge oder Chrome): Installieren-Symbol in der Adressleiste, oder
+     Menue -> "Apps" -> "Diese Website als App installieren".
+3. Die App danach immer ueber das Symbol starten (nicht ueber den Browser),
+   damit die Daten dort liegen.
+
+Hinweise
+- Die Daten bleiben auf dem jeweiligen Geraet (im Speicher der App). Browser und
+  installierte App haben getrennte Speicher; Daten aus dem Browser erscheinen
+  nicht automatisch in der installierten App.
+- Der Chef sieht alle Eintraege, indem er in der Chef-Ansicht die CSV-Dateien der
+  Mitarbeiter laedt (CSV-Export bei den Mitarbeitern).

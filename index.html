@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Arbeitszeiterfassung</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#2563eb">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Arbeitszeit">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--tx:#1b1f24;--mu:#6b7380;--bd:#e1e4e8;--ac:#2563eb;--bad:#dc2626;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14171b;--card:#1d2127;--tx:#e8eaed;--mu:#9aa3ae;--bd:#2d333b;--ac:#5b8def;--bad:#f87171}}
+:root[data-theme="dark"]{--bg:#14171b;--card:#1d2127;--tx:#e8eaed;--mu:#9aa3ae;--bd:#2d333b;--ac:#5b8def;--bad:#f87171}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:820px;margin:0 auto;padding:16px}
+h1{font-size:1.3rem;margin:4px 0 12px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:16px;margin-bottom:14px}
+.tabs{display:flex;gap:8px;margin-bottom:14px}
+button,input{font:inherit;color:inherit}
+button{background:var(--ac);color:#fff;border:0;border-radius:8px;padding:9px 14px;cursor:pointer}
+button.sec{background:transparent;color:var(--tx);border:1px solid var(--bd)}
+button.bad{background:transparent;color:var(--bad);padding:4px 10px;font-size:1.2rem;font-weight:700;line-height:1}
+.x{position:sticky;right:0;background:var(--card);text-align:right}
+input{background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:8px;max-width:100%}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:end}
+label{display:flex;flex-direction:column;font-size:.8rem;color:var(--mu);gap:3px}
+.sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;text-align:center}
+.big{font-size:1.5rem;font-weight:600}
+.mu{color:var(--mu);font-size:.85rem}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--bd);white-space:nowrap}
+th{font-size:.8rem;color:var(--mu);font-weight:500}
+tr.cl{cursor:pointer}
+.err{color:var(--bad);font-size:.9rem;margin-top:8px}
+</style>
+</head>
+<body>
+<main>
+  <h1 style="display:flex;align-items:center;gap:10px"><img src="data:image/png;base64,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" alt="" width="40" height="40">Arbeitszeiterfassung</h1>
+  <div class="tabs"><button id="t1">Meine Zeiten</button><button id="t2" class="sec">Chef-Ansicht</button></div>
+  <div id="app"></div>
+</main>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const p2=n=>String(n).padStart(2,'0');
+const KEY='az-data';
+let D={name:'',rate:15,fpRate:12.5,entries:[],payouts:[]};
+try{const r=localStorage.getItem(KEY);if(r)D=Object.assign(D,JSON.parse(r));}catch(e){}
+let pend=null,fpOn=false,tab=1,month=new Date().toISOString().slice(0,7),msg='',imp=[],open=null,dl=null;
+const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(D));}catch(e){msg='Speichern im Browser nicht möglich.';}};
+const tm=s=>{const[a,b]=s.split(':').map(Number);return a*60+b;};
+const wd=d=>new Date(d+'T12:00').toLocaleDateString('de-DE',{weekday:'long'});
+const fd=d=>d.split('-').reverse().join('.');
+const fh=h=>{const neg=h<0,m=Math.round(Math.abs(h)*60);return(neg?'−':'')+Math.floor(m/60)+':'+p2(m%60)+' h';};
+const work=e=>Math.max(0,tm(e.e)-tm(e.b)-(e.p||0)+0)/60;
+const fe=v=>v.toFixed(2).replace('.',',')+' €';
+const pay=e=>work(e)*D.rate+(e.fp?D.fpRate:0);
+const sumPay=()=>D.entries.reduce((a,e)=>a+pay(e),0);
+const sumW=()=>D.entries.reduce((a,e)=>a+work(e),0);
+const sumP=()=>D.payouts.reduce((a,p)=>a+p.h,0);
+
+function addEntry(){
+  const nmf=$('#nm');if(nmf){D.name=nmf.value.trim();persist();}
+  if(!D.name){msg='Bitte zuerst den Namen des Mitarbeiters eingeben.';return render();}
+  const d=$('#d').value,b=$('#b').value,e=$('#e').value;
+  if(!d||!b||!e||tm(e)<=tm(b)){msg='Bitte Datum, Beginn und Ende angeben (Ende nach Beginn).';return render();}
+  D.entries.push({id:String(Date.now()),d,ort:$('#o').value.trim(),tat:$('#t').value.trim(),b,e,p:+$('#p').value||0,fp:fpOn});
+  fpOn=false;msg='';persist();render();
+}
+function addPayout(){
+  const h=parseFloat(String($('#ph').value).replace(',','.'))||0,f=parseInt($('#pf').value)||0,d=$('#pd').value;
+  if(!(h>0||f>0)||!d){msg='Bitte Datum sowie Stunden und/oder Fahrpauschalen für die Auszahlung angeben.';return render();}
+  D.payouts.push({id:String(Date.now()),d,h,fp:f,n:$('#pn').value.trim()});msg='';persist();render();
+}
+async function saveFile(o){
+  const blob=new Blob([o.data],{type:'text/csv;charset=utf-8'});
+  try{const f=new File([blob],o.filename,{type:'text/csv'});
+    if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f]});return;}}catch(e){if(e&&e.name=='AbortError')return;}
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=o.filename;document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1500);
+}
+const q=v=>'"'+String(v).replace(/"/g,'""')+'"';
+async function exportCsv(){
+  const nmf=$('#nm');if(nmf){D.name=nmf.value.trim();persist();}
+  if(!D.name){msg='Bitte zuerst den Namen des Mitarbeiters eingeben.';return render();}
+  const L=[['Mitarbeiter','Typ','Datum','Wochentag','Ort','Tätigkeit','Beginn','Ende','Pause (min)','Fahrpauschale','Arbeitszeit (h)','Verdienst (€)','Stundenlohn (€)','Fahrpauschale (€)'].join(';')];
+  const n=x=>x.toFixed(2).replace('.',',');
+  D.entries.slice().sort((a,b)=>a.d.localeCompare(b.d)).forEach(e=>L.push([q(D.name),'Arbeit',e.d,wd(e.d),q(e.ort),q(e.tat),e.b,e.e,e.p,e.fp?'Ja':'',n(work(e)),n(pay(e)),n(D.rate),n(D.fpRate)].join(';')));
+  D.payouts.forEach(p=>L.push([q(D.name),'Auszahlung',p.d,wd(p.d),'',q(p.n),'','','',p.fp?'-'+p.fp:'',n(-p.h),'',n(D.rate),n(D.fpRate)].join(';')));
+  try{await saveFile({filename:'arbeitszeiten'+(D.name?'-'+D.name.replace(/\W+/g,'_'):'')+'.csv',data:'\ufeff'+L.join('\n')});}catch(e){msg='Export nicht möglich.';render();}
+}
+function parseCsv(t){const R=[];let r=[],c='',iq=false;t=t.replace(/^\ufeff/,'');
+  for(let i=0;i<t.length;i++){const ch=t[i];
+    if(iq){if(ch=='"'){if(t[i+1]=='"'){c+='"';i++;}else iq=false;}else c+=ch;}
+    else if(ch=='"')iq=true;else if(ch==';'){r.push(c);c='';}
+    else if(ch=='\n'){r.push(c.replace(/\r$/,''));R.push(r);r=[];c='';}else c+=ch;}
+  if(c||r.length){r.push(c);R.push(r);}return R.slice(1).filter(x=>x.length>=11);}
+async function importFiles(files){
+  for(const f of files){const rows=parseCsv(await f.text());
+    rows.forEach(x=>imp.push({ma:x[0]||f.name.replace(/\.csv$/i,''),typ:x[1],d:x[2],wd:x[3],ort:x[4],tat:x[5],b:x[6],e:x[7],pa:x[8],fp:x[9]=='Ja',fpn:x[1]=='Auszahlung'?Math.abs(parseInt(x[9]))||0:0,rt:parseFloat(String(x[12]||'').replace(',','.'))||0,fr:parseFloat(String(x[13]||'').replace(',','.'))||0,h:parseFloat(String(x[10]).replace(',','.'))||0,v:parseFloat(String(x[11]||'').replace(',','.'))||0}));}
+  render();
+}
+function chef(){
+  const g={};imp.forEach(r=>(g[r.ma]=g[r.ma]||[]).push(r));
+  const names=Object.keys(g).sort();
+  const body=names.map(n=>{const L=g[n],w=L.filter(r=>r.typ=='Arbeit').reduce((a,r)=>a+r.h,0),p=-L.filter(r=>r.typ=='Auszahlung').reduce((a,r)=>a+r.h,0),v=L.filter(r=>r.typ=='Arbeit').reduce((a,r)=>a+r.v,0),fpT=L.filter(r=>r.fp).length,fpP=L.reduce((a,r)=>a+r.fpn,0),rt=(L.find(r=>r.rt)||{}).rt||0,fr=(L.find(r=>r.fr)||{}).fr||0,off=(w-p)*rt+(fpT-fpP)*fr;
+    let s=`<tr><td>${esc(n)}</td><td>${fh(w)}</td><td>${fh(p)}</td><td>${fh(w-p)}</td><td>${fpT-fpP}</td><td>${fe(v)}</td><td><b>${fe(off)}</b></td></tr>`;
+    return s;}).join('')||'<tr><td colspan="7" class="mu">Noch keine CSV-Dateien geladen.</td></tr>';
+  const all=imp.slice().sort((a,b)=>b.d.localeCompare(a.d)||a.ma.localeCompare(b.ma)).map(r=>`<tr><td>${esc(r.ma)}</td><td>${fd(r.d)}</td><td>${esc(r.wd)}</td><td>${esc(r.ort)}</td><td>${esc(r.tat)}</td><td>${r.typ=='Arbeit'?esc(r.b)+'–'+esc(r.e):'Auszahlung'}</td><td>${r.typ=='Arbeit'?esc(r.pa||0):''}</td><td>${r.typ=='Arbeit'?(r.fp?'✓':''):(r.fpn?'−'+r.fpn:'')}</td><td>${fh(r.h)}</td><td>${r.typ=='Arbeit'?fe(r.v):''}</td></tr>`).join('');
+  return `<div class="card"><b>Alle Mitarbeiter</b><p class="mu">Die Daten bleiben auf dem Gerät des jeweiligen Mitarbeiters. Der Chef lädt hier die CSV-Dateien der Mitarbeiter, um alle Zeiten zu sehen. Die geladenen Dateien werden nicht gespeichert.</p>
+    <div class="row"><input id="imp" type="file" accept=".csv" multiple><button class="sec" id="clr">Leeren</button></div></div>
+    <div class="card scroll"><table><tr><th>Mitarbeiter</th><th>Gearbeitet</th><th>Ausbezahlt</th><th>Verbleibend</th><th>Fahrpausch. offen</th><th>Verdienst</th><th>Offener Betrag</th></tr>${body}</table></div>
+    <div class="card"><b>Alle Einträge (${imp.length})</b><div class="scroll">${imp.length?`<table><tr><th>Mitarbeiter</th><th>Datum</th><th>Tag</th><th>Ort</th><th>Tätigkeit</th><th>Zeit</th><th>Pause</th><th>Fahrpausch.</th><th>Stunden</th><th>Verdienst</th></tr>${all}</table>`:'<p class="mu">Noch keine Einträge geladen.</p>'}</div></div>`;
+}
+function mine(){
+  const w=sumW(),p=sumP(),fpT=D.entries.filter(e=>e.fp).length,fpP=D.payouts.reduce((a,x)=>a+(x.fp||0),0),off=(w-p)*D.rate+(fpT-fpP)*D.fpRate,t=new Date().toISOString().slice(0,10);
+  const L=D.entries.filter(e=>e.d.startsWith(month)).sort((a,b)=>b.d.localeCompare(a.d));
+  const mw=L.reduce((a,e)=>a+work(e),0);
+  const rows=L.map(e=>`<tr><td>${fd(e.d)}</td><td>${wd(e.d)}</td><td>${esc(e.ort)}</td><td>${esc(e.tat)}</td><td>${e.b}–${e.e}</td><td>${e.p}</td><td>${e.fp?'✓':''}</td><td><b>${fh(work(e))}</b></td><td>${fe(pay(e))}</td><td class="x"><button class="bad" data-de="${e.id}"${pend==='e'+e.id?' style="background:var(--bad);color:#fff;font-size:.9rem"':''}>${pend==='e'+e.id?'Löschen?':'✕'}</button></td></tr>`).join('');
+  const pr=D.payouts.slice().sort((a,b)=>b.d.localeCompare(a.d)).map(x=>`<tr><td>${fd(x.d)}</td><td>${fh(x.h)}</td><td>${x.fp||0}</td><td>${esc(x.n)}</td><td class="x"><button class="bad" data-dp="${x.id}"${pend==='p'+x.id?' style="background:var(--bad);color:#fff;font-size:.9rem"':''}>${pend==='p'+x.id?'Löschen?':'✕'}</button></td></tr>`).join('');
+  return `<div class="card"><label>Name des Mitarbeiters<input id="nm" value="${esc(D.name)}" placeholder="Vor- und Nachname" autocomplete="name" style="width:260px"></label></div>
+  <div class="card"><div class="sum"><div><div class="mu">Gearbeitet gesamt</div><div class="big">${fh(w)}</div></div><div><div class="mu">Ausbezahlt</div><div class="big">${fh(p)}</div></div><div><div class="mu">Verbleibend</div><div class="big">${fh(w-p)}</div></div><div><div class="mu">Verdienst gesamt</div><div class="big">${fe(sumPay())}</div></div><div><div class="mu">Offener Betrag</div><div class="big">${fe(off)}</div><div class="mu">inkl. ${fpT-fpP} Fahrpauschale(n)</div></div></div></div>
+  <div class="card"><b>Neuer Eintrag</b><div class="row" style="margin-top:8px">
+    <label>Datum<input id="d" type="date" value="${t}"></label><label>Ort<input id="o" style="width:130px"></label><label>Tätigkeit<input id="t" style="width:150px"></label>
+    <label>Beginn<input id="b" type="time" value="08:00"></label><label>Ende<input id="e" type="time" value="16:00"></label>
+    <label>Pause (min)<input id="p" type="number" min="0" value="30" style="width:90px"></label><button type="button" id="fp" class="${fpOn?'':'sec'}">${fpOn?'✓ ':''}Fahrpauschale</button><button id="add">Speichern</button></div>
+    <div class="err">${esc(msg)}</div></div>
+  <div class="card"><div class="row" style="justify-content:space-between"><label>Monat<input id="mon" type="month" value="${month}"></label><div><div class="big">${fh(mw)}</div><div class="mu">${L.filter(e=>e.fp).length} Fahrpauschale(n) · ${fe(L.reduce((a,e)=>a+pay(e),0))}</div></div></div>
+    <div class="scroll">${L.length?`<table><tr><th>Datum</th><th>Tag</th><th>Ort</th><th>Tätigkeit</th><th>Zeit</th><th>Pause</th><th>Fahrpausch.</th><th>Arbeitszeit</th><th>Verdienst</th><th class="x"></th></tr>${rows}</table>`:'<p class="mu">Keine Einträge in diesem Monat.</p>'}</div></div>
+  <div class="card"><b>Auszahlungen (Stunden und Fahrpauschalen)</b><div class="row" style="margin:8px 0"><label>Datum<input id="pd" type="date" value="${t}"></label><label>Stunden<input id="ph" type="number" step="0.25" min="0" style="width:90px"></label><label>Fahrpauschalen (Anzahl)<input id="pf" type="number" step="1" min="0" value="0" style="width:90px"></label><label>Notiz<input id="pn" style="width:150px"></label><button id="addp">Abziehen</button></div>
+    ${pr?`<div class="scroll"><table><tr><th>Datum</th><th>Stunden</th><th>Fahrpausch.</th><th>Notiz</th><th class="x"></th></tr>${pr}</table></div>`:''}</div>
+  <div class="card"><div class="row">
+    <label>Stundenlohn (€)<input id="rt" type="number" step="0.5" min="0" value="${D.rate}" style="width:90px"></label><label>Fahrpauschale (€)<input id="fr" type="number" step="0.5" min="0" value="${D.fpRate}" style="width:90px"></label><button class="sec" id="csv">CSV-Export</button></div></div>`;
+}
+function render(){
+  $('#t1').className=tab==1?'':'sec';$('#t2').className=tab==2?'':'sec';
+  $('#app').innerHTML=tab==1?mine():chef();
+}
+document.addEventListener('click',e=>{const t=e.target.closest('button,tr.cl');if(!t){if(pend){pend=null;render();}return;}
+  if(t.id=='t1'){tab=1;render();}else if(t.id=='t2'){tab=2;render();}
+  else if(t.id=='add')addEntry();else if(t.id=='addp')addPayout();else if(t.id=='csv')exportCsv();
+  else if(t.id=='fp'){fpOn=!fpOn;t.className=fpOn?'':'sec';t.textContent=(fpOn?'✓ ':'')+'Fahrpauschale';}
+  else if(t.id=='clr'){imp=[];open=null;render();}
+  else if(t.dataset.de){if(pend==='e'+t.dataset.de){D.entries=D.entries.filter(x=>x.id!==t.dataset.de);pend=null;persist();}else pend='e'+t.dataset.de;render();}
+  else if(t.dataset.dp){if(pend==='p'+t.dataset.dp){D.payouts=D.payouts.filter(x=>x.id!==t.dataset.dp);pend=null;persist();}else pend='p'+t.dataset.dp;render();}
+  else if(t.dataset.o){open=open===t.dataset.o?null:t.dataset.o;render();}});
+document.addEventListener('change',e=>{const t=e.target;
+  if(t.id=='mon'&&t.value){month=t.value;render();}
+  else if(t.id=='rt'||t.id=='fr'){const v=parseFloat(String(t.value).replace(',','.'));if(v>=0){D[t.id=='rt'?'rate':'fpRate']=v;persist();}render();}
+  else if(t.id=='nm'){D.name=t.value.trim();persist();}
+  else if(t.id=='imp'&&t.files.length)importFiles([...t.files]);});
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+render();
+</script>
+</body>
+</html>
